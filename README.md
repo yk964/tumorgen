@@ -13,26 +13,25 @@ In liver tumor segmentation tasks, the scarcity of annotated data (e.g., only 13
 # Date process
 
 ### 1. Intelligent Localization and Vessel Avoidance
-- **Vessel Segmentation**: The `segment_vessels` function quickly locates vascular regions using a preset HU value range (150–300).
-- **Safety collision Detection**: The `gen_position` algorithm, combined with distance transformation (`distance_transform_edt`), ensures that the tumor generation points maintain anatomically reasonable distances from blood vessels.
-- **Liver Mask Erosion**: A 5x5 kernel is used for edge erosion to prevent tumors from being generated at the liver boundary.
+This step focuses on ensuring anatomical accuracy by identifying vascular regions and preventing tumor generation in close proximity to critical structures.  
+- **Vessel Segmentation**: The `segment_vessels` function identifies blood vessels using a predefined HU range (150–300).  
+- **Safety Collision Detection**: The `gen_position` algorithm leverages distance transformation to maintain safe distances between generated tumors and nearby vessels, preserving realistic spatial relationships.
 
 ### 2. Multi-Stage Morphological Modeling
-- **Basic Geometric Generation**: The `get_ellipsoid` function constructs a 3D ellipsoid to simulate the regular shape of early-stage tumors.
-- **Composite Deformation Strategy**:
-  - **Elastic Deformation**: `apply_complex_deformation` dynamically adjusts deformation intensity based on tumor diameter (D) with σ_e = 0.5 + 0.1 * (D/30)².
-  - **Fractal Noise**: For tumors ≥10mm, Perlin noise (λ = 0.1 * (1 + D/20)) is applied to generate lobulated edges.
-- **Morphological Optimization**: `binary_erosion` and `binary_dilation` are used to maintain the anatomical relationship between the tumor and liver parenchyma.
+Tumor morphology is modeled through a combination of geometric foundations and advanced deformation techniques to simulate realistic shapes and textures.  
+- **Basic Geometry**: A 3D ellipsoid serves as the initial structure to represent early-stage tumors with regular shapes.  
+- **Advanced Deformations**:  
+  - Elastic deformation dynamically adjusts based on tumor size to create irregularities.  
+  - Fractal noise is applied to larger tumors (≥10mm) to generate lobulated edges, mimicking complex tumor boundaries.
 
 ### 3. Pathological Texture Synthesis
 - **HU Value Modeling**:
-  - **Necrotic Core**: Increases the HU value by 30 in the central region (`necrosis_mask`).
-  - **Steatosis**: Random patches attenuate HU values by 10–30 (`fat_mask`).
-- **Gaussian Smoothing**: A Gaussian filter with σ = 1.5 is applied to eliminate artificial traces.
-- **Edge Enhancement**: Morphological edge detection enhances the capsule effect (`edge_mask * 25`).
+  - **Necrotic Core**: Increases the HU value in the central region.
+  - **Steatosis**: Random patches attenuate HU values.
+- **Smoothing and Edge Enhancement**: Gaussian smoothing eliminates artificial artifacts, while morphological edge enhancement highlights the tumor capsule for better delineation.
 
 <p align="center"><img width="100%" src="figures/syn.png" /></p>
 
 ## Run the codes
 ```bash
-gen_synthesis_tumor: python main.py -i input_dir -o output_dir
+Run: python main.py -i input_dir -o output_dir
