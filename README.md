@@ -12,6 +12,8 @@ In liver tumor segmentation tasks, the scarcity of annotated data (e.g., only 13
 
 # Date process
 
+<p align="center"><img width="100%" src="figures/pipeline.png" /></p>
+
 ### 1. Intelligent Localization and Vessel Avoidance
 This step focuses on ensuring anatomical accuracy by identifying vascular regions and preventing tumor generation in close proximity to critical structures.  
 - **Vessel Segmentation**: The `segment_vessels` function identifies blood vessels using a predefined HU range (150–300).  
